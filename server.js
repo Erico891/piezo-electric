@@ -64,12 +64,6 @@ function generateDemoData() {
   const now = Date.now();
   const timeDelta = (now - powerInsights.lastUpdateTime) / 1000; // seconds
   
-  // Simulate voltage fluctuation between 2V and 7.2V
-  latestData.voltage = Math.max(2.0, Math.min(7.2, latestData.voltage + (Math.random() - 0.5) * 0.5));
-  
-  // Occasionally increment pass count (about 20% of the time)
-  if (Math.random() < 0.2) {
-    latestData.passCount++;
     
     // Bigger energy spike when vehicle passes (adjusted for 470µF capacitor)
     const energyGain = 0.00006 + Math.random() * 0.00009;  // Smaller energy gain for 470µF
@@ -80,11 +74,7 @@ function generateDemoData() {
   // Calculate energy using E = 0.5 * C * V^2 (470µF capacitor)
   const capacitance = 0.00047; // 470µF in Farads
   latestData.energy = 0.5 * capacitance * Math.pow(latestData.voltage, 2);
-  
-  // Calculate estimated runtime based on energy (LED power ~0.1W)
-  const ledPower = 0.1; // Watts
-  latestData.estimatedRuntime = latestData.energy / ledPower;
-  
+    
   // Update power insights
   powerInsights.avgEnergyPerVehicle = latestData.passCount > 0 ? 
     powerInsights.totalEnergy / latestData.passCount : 0;
@@ -94,9 +84,6 @@ function generateDemoData() {
   // Calculate power: change in energy over time
   powerInsights.power = timeDelta > 0 ? latestData.energy / timeDelta : 0;
   
-  // Calculate battery charge percentage
-  powerInsights.batteryChargePercent = Math.min(1, Math.max(0, 
-    powerInsights.totalEnergy / BATTERY_ENERGY_CAPACITY));
   
   // Update timestamps for history
   const currentTime = new Date();
