@@ -1,6 +1,6 @@
-# Piezoelectric Road Power Simulator with ESP8266 + Node.js
+# Piezoelectric Road Power Simulator with ESP32 + Node.js
 
-A full-stack energy harvesting system that captures mechanical energy from road vibrations using piezoelectric elements, stores the collected energy in batteries, and uses it to power LED lighting. This project combines hardware components with real-time data visualization to provide insights into renewable energy generation from roadway vibrations.
+A full-stack energy harvesting system that captures mechanical energy from road vibrations using piezoelectric elements, stores the collected energy in capacitors, and uses it to power LED lighting. This project combines hardware components with real-time data visualization to provide insights into renewable energy generation from roadway vibrations.
 
 ![Piezoelectric Energy Harvesting System](https://via.placeholder.com/800x400?text=Piezoelectric+Road+Power+Simulator)
 
@@ -17,27 +17,27 @@ This closed-loop system represents a practical application of piezoelectric ener
 
 ### Key Features
 
-- **Complete Energy Cycle**: Harvests, stores, and utilizes energy in a self-contained system
-- **Capacitor Storage**: Uses a single 470µF capacitor for energy collection
-- **Direct LED Power**: Powers LED lights directly from the capacitor storage
-- **Real-time Monitoring**: Displays voltage, energy, and power metrics on a responsive dashboard
-- **Vehicle Detection**: Counts vehicle passes and correlates with energy generation
-- **Energy Analysis**: Calculates potential runtime for LEDs based on harvested energy
-- **Power Insights**: Shows historical data and energy generation patterns
-- **Dual Operation Modes**: Live data from hardware or demo mode with simulated data
+* **Complete Energy Cycle**: Harvests, stores, and utilizes energy in a self-contained system
+* **Capacitor Storage**: Uses a single 470µF capacitor for energy collection
+* **Direct LED Power**: Powers LED lights directly from the capacitor storage
+* **Real-time Monitoring**: Displays voltage, energy, and power metrics on a responsive dashboard
+* **Vehicle Detection**: Counts vehicle passes and correlates with energy generation
+* **Energy Analysis**: Calculates potential runtime for LEDs based on harvested energy
+* **Power Insights**: Shows historical data and energy generation patterns
+* **Dual Operation Modes**: Live data from hardware or demo mode with simulated data
 
 ## 📦 Project Structure
 
 ```
 /piezoelectric
-├── /arduino           → ESP8266 firmware (piezo_harvester.ino and esp8266.ino)
+├── /arduino           → ESP32 firmware (piezo_harvester.ino and esp32.ino)
 ├── /public            → Frontend dashboard (HTML, CSS, JS)
 │   ├── index.html     → Main dashboard page
 │   ├── style.css      → Dashboard styling
 │   └── script.js      → Client-side WebSocket and visualization logic
 ├── server.js          → Node.js WebSocket server for data handling
 ├── package.json       → Node.js dependencies
-├── ESP8266_SETUP.md   → Hardware setup instructions
+├── ESP32_SETUP.md     → Hardware setup instructions
 └── README.md          → Project documentation
 ```
 
@@ -51,7 +51,7 @@ flowchart TB
         PZ[Piezoelectric Array]
         CAP[470µF Capacitor]
         LED[LED Light]
-        ESP[ESP8266 Microcontroller]
+        ESP[ESP32 Microcontroller]
     end
     
     subgraph "Server Layer"
@@ -83,89 +83,97 @@ flowchart TB
 ```mermaid
 sequenceDiagram
     participant Piezo as Piezoelectric Sensors
-    participant ESP8266 as ESP8266
+    participant ESP32 as ESP32
     participant Server as Node.js Server
     participant Client as Web Dashboard
-    
+
     Note over Piezo,Client: Vehicle Pass Event
-    Piezo->>ESP8266: Generate voltage spike
-    ESP8266->>ESP8266: Process voltage reading
-    ESP8266->>ESP8266: Calculate energy (E=0.5CV²)
-    ESP8266->>Server: Send data via WebSocket
+    Piezo->>ESP32: Generate voltage spike
+    ESP32->>ESP32: Process voltage reading
+    ESP32->>ESP32: Calculate energy (E=0.5CV²)
+    ESP32->>Server: Send data via WebSocket
     Server->>Server: Process & store data
     Server->>Client: Broadcast data update
     Client->>Client: Update visualization
     Client->>Client: Calculate metrics
-    
+
     Note over Client: User Interaction
     Client->>Server: Request mode change
     Server->>Server: Switch mode
-    Server->>ESP8266: Send command (if needed)
+    Server->>ESP32: Send command (if needed)
     Server->>Client: Confirm mode change
 ```
 
 ## 🛠️ Hardware Requirements
 
-- ESP8266 NodeMCU or Wemos D1 Mini
-- 9× Piezoelectric disc transducers (1 for detection, 8 for power generation)
-- **470µF capacitor** for energy storage
-- **Zener diode (3.3V)** for voltage regulation and car detection
-- **10kΩ resistor** for voltage divider circuit
-- **100kΩ resistor** for analog input protection
-- Tactile switch for simulating vehicle passes
-- Status LEDs for visual indication
-- Breadboard and jumper wires
-- Micro USB cable for programming and power
+* ESP32 Dev Board (e.g., NodeMCU-32S, WROOM32)
+* 9× Piezoelectric disc transducers (1 for detection, 8 for power generation)
+* **470µF capacitor** for energy storage
+* **Zener diode (3.3V)** for voltage regulation and car detection
+* **10kΩ resistor** for voltage divider circuit
+* **100kΩ resistor** for analog input protection
+* Tactile switch for simulating vehicle passes
+* Status LEDs for visual indication
+* Breadboard and jumper wires
+* Micro USB cable for programming and power
 
 ## 🧰 Software Requirements
 
-- Node.js (v14.0.0 or higher)
-- npm or yarn package manager
-- Arduino IDE (for ESP8266 firmware)
-- Required Arduino libraries:
-  - ESP8266WiFi
-  - WebSocketsClient
-  - ArduinoJson (version 6.x)
-  - EEPROM
+* Node.js (v14.0.0 or higher)
+* npm or yarn package manager
+* Arduino IDE (for ESP32 firmware)
+* Required Arduino libraries:
+
+  * WiFi (for ESP32)
+  * WebSocketsClient
+  * ArduinoJson (version 6.x)
+  * EEPROM
 
 ## 🌟 Getting Started
 
-Follow these steps to set up and run the Piezoelectric Road Power Simulator:
-
 ### Step 1: Hardware Assembly
-See the detailed instructions in [ESP8266_SETUP.md](ESP8266_SETUP.md) for:
-- Piezoelectric array construction
-- Energy storage configuration using 470µF capacitor
-- Direct LED connection to capacitor
-- ESP8266 connections
-- Testing procedures
 
-### Step 2: ESP8266 Firmware
+See the detailed instructions in [ESP32\_SETUP.md](ESP32_SETUP.md) for:
+
+* Piezoelectric array construction
+* Energy storage configuration using 470µF capacitor
+* Direct LED connection to capacitor
+* ESP32 connections
+* Testing procedures
+
+### Step 2: ESP32 Firmware
+
 1. **Open Arduino IDE** and load `arduino/piezo_harvester.ino`
 2. **Update WiFi credentials**:
+
    ```cpp
    const char* ssid = "YOUR_WIFI_SSID";
    const char* password = "YOUR_WIFI_PASSWORD";
    ```
 3. **Set WebSocket server address**:
+
    ```cpp
    const char* wsHost = "YOUR_SERVER_IP";
    const int wsPort = 3000;
    ```
-4. **Upload firmware** to ESP8266
+4. **Upload firmware** to ESP32 board
 
 ### Step 3: Server Setup
+
 1. **Install dependencies**:
+
    ```bash
    npm install
    ```
 2. **Start the server**:
+
    ```bash
    npm start
    ```
 3. **Verify server** is running on `http://localhost:3000`
 
 ### Step 4: Access Dashboard
+
 1. **Open web browser** and navigate to `http://localhost:3000`
 2. **Verify WebSocket connection** (green status indicator)
 3. **Test data flow** by pressing the tactile switch
@@ -173,92 +181,108 @@ See the detailed instructions in [ESP8266_SETUP.md](ESP8266_SETUP.md) for:
 ## 📊 Usage
 
 ### Initial Setup
-1. **Power on** the ESP8266 system
+
+1. **Power on** the ESP32 system
 2. **Wait for Wi-Fi connection** (onboard LED indicator)
 3. **Open dashboard** in web browser
 4. **Confirm WebSocket connection** status
 
 ### Simulating Vehicle Passes
-- **Manual simulation:** Press tactile switch to increment pass counter
-- **Physical simulation:** Apply pressure to the main piezoelectric disc
+
+* **Manual simulation:** Press tactile switch to increment pass counter
+* **Physical simulation:** Apply pressure to the main piezoelectric disc
 
 ### Dashboard Features
-- **Real-time monitoring** of voltage, energy, and power
-- **Vehicle pass counter** tracking
-- **Energy harvesting metrics** including total energy in joules
-- **LED runtime estimation** based on harvested energy
-- **Historical data visualization** with adjustable time ranges
-- **Power insights** showing peak voltage and average energy per vehicle
+
+* **Real-time monitoring** of voltage, energy, and power
+* **Vehicle pass counter** tracking
+* **Energy harvesting metrics** including total energy in joules
+* **LED runtime estimation** based on harvested energy
+* **Historical data visualization** with adjustable time ranges
+* **Power insights** showing peak voltage and average energy per vehicle
 
 ### Operation Modes
-- **Live Mode**: Connects to ESP8266 hardware for real data
-- **Demo Mode**: Simulates piezoelectric data for demonstration purposes
+
+* **Live Mode**: Connects to ESP32 hardware for real data
+* **Demo Mode**: Simulates piezoelectric data for demonstration purposes
 
 ### Power Metrics and Voltage Range
 
 The system simulates realistic piezoelectric voltage generation with the following specifications:
 
-- **Voltage Range**: 2.0V to 7.2V (simulating different vehicle weights and speeds)
-- **Energy Storage**: Calculated in real-time using capacitor formula E = 0.5CV²
-- **Vehicle Detection**: Threshold-based counting using zener diode reference
-- **Power Calculation**: Rate of energy change over time (dE/dt)
+* **Voltage Range**: 2.0V to 7.2V (simulating different vehicle weights and speeds)
+* **Energy Storage**: Calculated in real-time using capacitor formula E = 0.5CV²
+* **Vehicle Detection**: Threshold-based counting using zener diode reference
+* **Power Calculation**: Rate of energy change over time (dE/dt)
 
 **Voltage Characteristics:**
-- **2.0-3.0V**: Light vehicles (motorcycles, small cars)
-- **3.0-5.0V**: Standard vehicles (cars, light trucks)  
-- **5.0-7.2V**: Heavy vehicles (trucks, buses)
+
+* **2.0-3.0V**: Light vehicles (motorcycles, small cars)
+* **3.0-5.0V**: Standard vehicles (cars, light trucks)
+* **5.0-7.2V**: Heavy vehicles (trucks, buses)
 
 The 470µF capacitor provides sufficient energy storage for LED operation while maintaining realistic charge/discharge characteristics for road-based energy harvesting applications.
 
 ## 🧪 Technical Details
 
 ### Energy Storage Configuration
+
 The system uses a single 470µF capacitor for energy storage:
+
 ```
 Total Capacitance = 470µF
 ```
 
 This configuration:
-- Provides sufficient energy storage for LED operation
-- Enables direct discharge to LED loads
-- Simplifies the circuit design
+
+* Provides sufficient energy storage for LED operation
+* Enables direct discharge to LED loads
+* Simplifies the circuit design
 
 ### Energy Calculation
+
 The system uses the following formula to calculate energy stored in the 470µF capacitor:
+
 ```
 E = 0.5 × C × V²
 ```
+
 Where:
-- E = Energy in joules (J)
-- C = Total capacitance in farads (470µF = 0.00047F)
-- V = Voltage in volts (ranges from 2.0V to 7.2V)
+
+* E = Energy in joules (J)
+* C = Total capacitance in farads (470µF = 0.00047F)
+* V = Voltage in volts (ranges from 2.0V to 7.2V)
 
 **Example Calculations:**
-- At 2.0V: E = 0.5 × 0.00047 × (2.0)² = 0.00094 J
-- At 4.5V: E = 0.5 × 0.00047 × (4.5)² = 0.0048 J  
-- At 7.2V: E = 0.5 × 0.00047 × (7.2)² = 0.0122 J
+
+* At 2.0V: E = 0.5 × 0.00047 × (2.0)² = 0.00094 J
+* At 4.5V: E = 0.5 × 0.00047 × (4.5)² = 0.0048 J
+* At 7.2V: E = 0.5 × 0.00047 × (7.2)² = 0.0122 J
 
 ### Runtime Estimation
+
 LED runtime is calculated as:
+
 ```
 Runtime (seconds) = Energy (J) / Power consumption (W)
 ```
 
 ### Wireless Communication
-- **Protocol**: WebSocket for real-time bidirectional communication
-- **Data format**: JSON messages containing sensor readings and system status
-- **Update frequency**: 2 seconds (configurable)
+
+* **Protocol**: WebSocket for real-time bidirectional communication
+* **Data format**: JSON messages containing sensor readings and system status
+* **Update frequency**: 2 seconds (configurable)
 
 ## 🚗 Vehicle Detection System
 
-The ESP8266 counts vehicles using a sophisticated voltage threshold detection circuit with a zener diode and resistor network. This system provides reliable vehicle counting by detecting voltage spikes generated when vehicles pass over the piezoelectric sensors.
+The ESP32 counts vehicles using a sophisticated voltage threshold detection circuit with a zener diode and resistor network. This system provides reliable vehicle counting by detecting voltage spikes generated when vehicles pass over the piezoelectric sensors.
 
 ### Car Counting Circuit Design
 
 ```
-Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP8266 ADC
+Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP32 ADC
                                         ↓
-                                   10kΩ Resistor → GND
+                                   10kΩ Resistor → GND
 ```
 
 ### How Vehicle Counting Works
@@ -266,16 +290,17 @@ Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP8266 ADC
 1. **Voltage Generation**: When a vehicle passes over the piezoelectric sensor, mechanical pressure generates an electrical voltage spike (typically 2-15V depending on vehicle weight and speed).
 
 2. **Voltage Regulation**: The zener diode (3.3V) acts as a voltage regulator and threshold detector:
-   - When voltage exceeds 3.3V, the zener conducts
-   - This creates a stable 3.3V signal at the ESP8266's analog input
-   - Voltages below 3.3V pass through proportionally
 
-3. **Threshold Detection**: The ESP8266 firmware continuously monitors the analog input (A0):
+   * When voltage exceeds 3.3V, the zener conducts
+   * This creates a stable 3.3V signal at the ESP32's analog input
+   * Voltages below 3.3V pass through proportionally
+
+3. **Threshold Detection**: The ESP32 firmware continuously monitors the analog input (e.g., GPIO34):
+
    ```cpp
-   int rawValue = analogRead(A0);
-   float voltage = (rawValue / 1024.0) * 3.3;
-   
-   // Vehicle detected when voltage exceeds threshold
+   int rawValue = analogRead(34);
+   float voltage = (rawValue / 4095.0) * 3.3;
+
    if (voltage > DETECTION_THRESHOLD && !vehicleDetected) {
        vehicleCount++;
        vehicleDetected = true;
@@ -283,6 +308,7 @@ Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP8266 ADC
    ```
 
 4. **Debouncing**: A software debounce timer prevents multiple counts from a single vehicle:
+
    ```cpp
    unsigned long debounceDelay = 2000; // 2 seconds
    if (millis() - lastDetectionTime > debounceDelay) {
@@ -292,24 +318,27 @@ Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP8266 ADC
 
 ### Circuit Components Explained
 
-- **Zener Diode (3.3V)**: 
-  - Protects ESP8266 from voltage spikes
-  - Creates consistent voltage levels for reliable detection
-  - Acts as a voltage threshold reference
+* **Zener Diode (3.3V)**:
 
-- **10kΩ Pull-down Resistor**:
-  - Ensures ADC reads 0V when no vehicle is present
-  - Provides current path for zener diode operation
-  - Prevents floating input conditions
+  * Protects ESP32 from voltage spikes
+  * Creates consistent voltage levels for reliable detection
+  * Acts as a voltage threshold reference
 
-- **100kΩ Input Protection Resistor**:
-  - Limits current into ESP8266 ADC pin
-  - Additional protection against voltage spikes
-  - Reduces noise in analog readings
+* **10kΩ Pull-down Resistor**:
+
+  * Ensures ADC reads 0V when no vehicle is present
+  * Provides current path for zener diode operation
+  * Prevents floating input conditions
+
+* **100kΩ Input Protection Resistor**:
+
+  * Limits current into ESP32 ADC pin
+  * Additional protection against voltage spikes
+  * Reduces noise in analog readings
 
 ### Detection Algorithm
 
-The ESP8266 firmware implements a multi-stage detection algorithm:
+The ESP32 firmware implements a multi-stage detection algorithm:
 
 1. **Baseline Monitoring**: Continuously sample voltage every 100ms
 2. **Spike Detection**: Identify voltage increases above baseline + threshold
@@ -321,9 +350,9 @@ The ESP8266 firmware implements a multi-stage detection algorithm:
 
 The system can be calibrated for different vehicle types:
 
-- **Light Vehicles (cars, motorcycles)**: 2.5V threshold
-- **Medium Vehicles (SUVs, trucks)**: 2.0V threshold  
-- **Heavy Vehicles (buses, semis)**: 1.5V threshold
+* **Light Vehicles (cars, motorcycles)**: 2.5V threshold
+* **Medium Vehicles (SUVs, trucks)**: 2.0V threshold
+* **Heavy Vehicles (buses, semis)**: 1.5V threshold
 
 ```cpp
 // Firmware configuration
@@ -343,22 +372,17 @@ The system can be calibrated for different vehicle types:
 ## 🔄 Project Extensions
 
 Potential ways to extend the project:
-- Add solar panel integration for hybrid energy harvesting
-- Implement energy efficient deep sleep modes
-- Add data logging to SD card or cloud database
-- Create mobile companion app using React Native
-- Implement machine learning for traffic pattern analysis
-- Scale up with multiple sensor nodes along a roadway
+
+* Add solar panel integration for hybrid energy harvesting
+* Implement energy efficient deep sleep modes
+* Add data logging to SD card or cloud database
+* Create mobile companion app using React Native
+* Implement machine learning for traffic pattern analysis
+* Scale up with multiple sensor nodes along a roadway
 
 ## 📜 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Special thanks to contributors and testers
-- Inspired by sustainable energy research
-- Built with open source technologies
 
 ## 📞 Contact
 
