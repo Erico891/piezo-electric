@@ -1,4 +1,4 @@
-# Piezoelectric Road Power Simulator with ESP8266 + Node.js
+# Piezoelectric Road Power Simulator with ESP32 + Node.js
 
 A full-stack energy harvesting system that captures mechanical energy from road vibrations using piezoelectric elements, stores the collected energy in batteries, and uses it to power LED lighting. This project combines hardware components with real-time data visualization to provide insights into renewable energy generation from roadway vibrations.
 
@@ -30,88 +30,87 @@ This closed-loop system represents a practical application of piezoelectric ener
 
 ```
 /piezoelectric
-├── /arduino           → ESP8266 firmware (piezo_harvester.ino and esp8266.ino)
+├── /arduino           → ESP32 firmware (piezo_harvester.ino)
 ├── /public            → Frontend dashboard (HTML, CSS, JS)
 │   ├── index.html     → Main dashboard page
 │   ├── style.css      → Dashboard styling
-│   └── script.js      → Client-side WebSocket and visualization logic
+│   └── script.js      → Client WebSocket and visualization logic
 ├── server.js          → Node.js WebSocket server for data handling
 ├── package.json       → Node.js dependencies
-├── ESP8266_SETUP.md   → Hardware setup instructions
 └── README.md          → Project documentation
+
 ```
 
 ## 🔄 System Architecture and Data Flow
 
 ### System Components Diagram
 
-```mermaid
-flowchart TB
+```flowchart TB
     subgraph "Hardware Layer"
         PZ[Piezoelectric Array]
         CAP[470µF Capacitor]
         LED[LED Light]
-        ESP[ESP8266 Microcontroller]
+        ESP[ESP32 Microcontroller]
     end
-    
+
     subgraph "Server Layer"
         NODE[Node.js Server]
-        WSSERVER[WebSocket Server]
-        DATAPROC[Data Processing]
+        WS[WebSocket Server]
+        PROC[Data Processing]
     end
-    
+
     subgraph "Client Layer"
         DASH[Web Dashboard]
-        CHART[Real-time Charts]
+        CHART[Live Charts]
         STATS[Power Statistics]
     end
-    
+
     PZ --> CAP
     CAP --> LED
     CAP --> ESP
-    ESP --> |WebSocket| WSSERVER
-    WSSERVER --> NODE
-    NODE --> DATAPROC
-    DATAPROC --> WSSERVER
-    WSSERVER --> |WebSocket| DASH
+    ESP --> |WebSocket| WS
+    WS --> NODE
+    NODE --> PROC
+    PROC --> WS
+    WS --> |WebSocket| DASH
     DASH --> CHART
     DASH --> STATS
+
 ```
 
 ### Data Flow Sequence
 
-```mermaid
-sequenceDiagram
+```sequenceDiagram
     participant Piezo as Piezoelectric Sensors
-    participant ESP8266 as ESP8266
+    participant ESP32 as ESP32
     participant Server as Node.js Server
     participant Client as Web Dashboard
-    
-    Note over Piezo,Client: Vehicle Pass Event
-    Piezo->>ESP8266: Generate voltage spike
-    ESP8266->>ESP8266: Process voltage reading
-    ESP8266->>ESP8266: Calculate energy (E=0.5CV²)
-    ESP8266->>Server: Send data via WebSocket
-    Server->>Server: Process & store data
-    Server->>Client: Broadcast data update
-    Client->>Client: Update visualization
-    Client->>Client: Calculate metrics
-    
+
+    Note over Piezo,Client: Vehicle Pass Event Simulation
+    Piezo->>ESP32: Generate voltage spike upon pressure
+    ESP32->>ESP32: Read voltage via ADC
+    ESP32->>ESP32: Calculate energy (E=0.5 × C × V²)
+    ESP32->>Server: Transmit data via WebSocket
+    Server->>Server: Process and store data
+    Server->>Client: Send real-time data updates
+    Client->>Client: Update graphs and metrics
+    Client->>Client: Display energy, voltage, and pass counts
+
     Note over Client: User Interaction
-    Client->>Server: Request mode change
-    Server->>Server: Switch mode
-    Server->>ESP8266: Send command (if needed)
+    Client->>Server: Request mode change (Live/Demo)
+    Server->>Server: Update mode state
+    Server->>ESP32: Send command if required
     Server->>Client: Confirm mode change
 ```
 
 ## 🛠️ Hardware Requirements
 
-- ESP8266 NodeMCU or Wemos D1 Mini
-- 9× Piezoelectric disc transducers (1 for detection, 8 for power generation)
+- ESP32 NodeMCU or Wemos D1 Mini
+- 11× Piezoelectric disc transducers (1 for detection, 10 for power generation)
 - **470µF capacitor** for energy storage
 - **Zener diode (3.3V)** for voltage regulation and car detection
-- **10kΩ resistor** for voltage divider circuit
-- **100kΩ resistor** for analog input protection
+- **5kΩ resistor** for voltage divider circuit
+- **10kΩ resistor** for analog input protection
 - Tactile switch for simulating vehicle passes
 - Status LEDs for visual indication
 - Breadboard and jumper wires
@@ -121,7 +120,7 @@ sequenceDiagram
 
 - Node.js (v14.0.0 or higher)
 - npm or yarn package manager
-- Arduino IDE (for ESP8266 firmware)
+- Arduino IDE (for ESP32 firmware)
 - Required Arduino libraries:
   - ESP8266WiFi
   - WebSocketsClient
@@ -133,7 +132,7 @@ sequenceDiagram
 Follow these steps to set up and run the Piezoelectric Road Power Simulator:
 
 ### Step 1: Hardware Assembly
-See the detailed instructions in [ESP8266_SETUP.md](ESP8266_SETUP.md) for:
+See the detailed instructions in [ESP32_SETUP.md](ESP32_SETUP.md) for:
 - Piezoelectric array construction
 - Energy storage configuration using 470µF capacitor
 - Direct LED connection to capacitor
@@ -152,7 +151,7 @@ See the detailed instructions in [ESP8266_SETUP.md](ESP8266_SETUP.md) for:
    const char* wsHost = "YOUR_SERVER_IP";
    const int wsPort = 3000;
    ```
-4. **Upload firmware** to ESP8266
+4. **Upload firmware** to ESP32
 
 ### Step 3: Server Setup
 1. **Install dependencies**:
@@ -173,7 +172,7 @@ See the detailed instructions in [ESP8266_SETUP.md](ESP8266_SETUP.md) for:
 ## 📊 Usage
 
 ### Initial Setup
-1. **Power on** the ESP8266 system
+1. **Power on** the ESP32 system
 2. **Wait for Wi-Fi connection** (onboard LED indicator)
 3. **Open dashboard** in web browser
 4. **Confirm WebSocket connection** status
@@ -191,7 +190,7 @@ See the detailed instructions in [ESP8266_SETUP.md](ESP8266_SETUP.md) for:
 - **Power insights** showing peak voltage and average energy per vehicle
 
 ### Operation Modes
-- **Live Mode**: Connects to ESP8266 hardware for real data
+- **Live Mode**: Connects to ESP32 hardware for real data
 - **Demo Mode**: Simulates piezoelectric data for demonstration purposes
 
 ### Power Metrics and Voltage Range
@@ -256,7 +255,7 @@ The ESP8266 counts vehicles using a sophisticated voltage threshold detection ci
 ### Car Counting Circuit Design
 
 ```
-Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP8266 ADC
+Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP32 ADC
                                         ↓
                                    10kΩ Resistor → GND
 ```
@@ -267,7 +266,7 @@ Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP8266 ADC
 
 2. **Voltage Regulation**: The zener diode (3.3V) acts as a voltage regulator and threshold detector:
    - When voltage exceeds 3.3V, the zener conducts
-   - This creates a stable 3.3V signal at the ESP8266's analog input
+   - This creates a stable 3.3V signal at the analog input
    - Voltages below 3.3V pass through proportionally
 
 3. **Threshold Detection**: The ESP8266 firmware continuously monitors the analog input (A0):
@@ -293,7 +292,7 @@ Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP8266 ADC
 ### Circuit Components Explained
 
 - **Zener Diode (3.3V)**: 
-  - Protects ESP8266 from voltage spikes
+  - Protects ESP32 from voltage spikes
   - Creates consistent voltage levels for reliable detection
   - Acts as a voltage threshold reference
 
@@ -303,7 +302,7 @@ Piezo Sensor → Bridge Rectifier → Zener Diode (3.3V) → ESP8266 ADC
   - Prevents floating input conditions
 
 - **100kΩ Input Protection Resistor**:
-  - Limits current into ESP8266 ADC pin
+  - Limits current into ESP32 ADC pin
   - Additional protection against voltage spikes
   - Reduces noise in analog readings
 
