@@ -107,11 +107,11 @@ sequenceDiagram
 ## 🛠️ Hardware Requirements
 
 * ESP32 Dev Board (e.g., NodeMCU-32S, WROOM32)
-* 9× Piezoelectric disc transducers (1 for detection, 8 for power generation)
+* 11× Piezoelectric disc transducers (1 for detection, 10 for power generation)
 * **470µF capacitor** for energy storage
 * **Zener diode (3.3V)** for voltage regulation and car detection
-* **10kΩ resistor** for voltage divider circuit
-* **100kΩ resistor** for analog input protection
+* **5kΩ resistor** for voltage divider circuit
+* **10kΩ resistor** for analog input protection
 * Tactile switch for simulating vehicle passes
 * Status LEDs for visual indication
 * Breadboard and jumper wires
