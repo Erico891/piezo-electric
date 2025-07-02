@@ -53,19 +53,19 @@ flowchart TB
         LED[LED Light]
         ESP[ESP32 Microcontroller]
     end
-    
+
     subgraph "Server Layer"
         NODE[Node.js Server]
         WSSERVER[WebSocket Server]
         DATAPROC[Data Processing]
     end
-    
+
     subgraph "Client Layer"
         DASH[Web Dashboard]
         CHART[Real-time Charts]
         STATS[Power Statistics]
     end
-    
+
     PZ --> CAP
     CAP --> LED
     CAP --> ESP
@@ -90,7 +90,7 @@ sequenceDiagram
     Note over Piezo,Client: Vehicle Pass Event
     Piezo->>ESP32: Generate voltage spike
     ESP32->>ESP32: Process voltage reading
-    ESP32->>ESP32: Calculate energy (E=0.5CV²)
+    ESP32->>ESP32: Calculate energy (E=CV)
     ESP32->>Server: Send data via WebSocket
     Server->>Server: Process & store data
     Server->>Client: Broadcast data update
@@ -211,7 +211,7 @@ See the detailed instructions in [ESP32\_SETUP.md](ESP32_SETUP.md) for:
 The system simulates realistic piezoelectric voltage generation with the following specifications:
 
 * **Voltage Range**: 2.0V to 7.2V (simulating different vehicle weights and speeds)
-* **Energy Storage**: Calculated in real-time using capacitor formula E = 0.5CV²
+* **Energy Storage**: Calculated in real-time using capacitor formula E = C × V
 * **Vehicle Detection**: Threshold-based counting using zener diode reference
 * **Power Calculation**: Rate of energy change over time (dE/dt)
 
@@ -244,20 +244,20 @@ This configuration:
 The system uses the following formula to calculate energy stored in the 470µF capacitor:
 
 ```
-E = 0.5 × C × V²
+E = C × V
 ```
 
 Where:
 
 * E = Energy in joules (J)
 * C = Total capacitance in farads (470µF = 0.00047F)
-* V = Voltage in volts (ranges from 2.0V to 7.2V)
+* V = Voltage in volts (measured after the capacitor)
 
 **Example Calculations:**
 
-* At 2.0V: E = 0.5 × 0.00047 × (2.0)² = 0.00094 J
-* At 4.5V: E = 0.5 × 0.00047 × (4.5)² = 0.0048 J
-* At 7.2V: E = 0.5 × 0.00047 × (7.2)² = 0.0122 J
+* At 2.0V: E = 0.00047 × 2.0 = 0.00094 J
+* At 4.5V: E = 0.00047 × 4.5 = 0.00212 J
+* At 7.2V: E = 0.00047 × 7.2 = 0.00338 J
 
 ### Runtime Estimation
 
